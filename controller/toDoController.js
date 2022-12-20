@@ -23,11 +23,18 @@ const createToDo = async (req, res) => {
     /* const newToDo = await category.create({})
     res.status(201).json({ newToDo: newToDo }) */
 };
+const oneTask = async (req, res) => {
+    const _id = req.params.id;
+    const task = await toDo.findById(_id);
+    res.status(202).json({ task: task });
+
+}
+
 const myTasks = async (req, res) => {
     const tasks = await toDo.find({});
     res.send(tasks);
 
 };
 
-export default { createToDo: createToDo, myTasks: myTasks };
+export default { createToDo: createToDo, myTasks: myTasks, oneTask: oneTask };
 

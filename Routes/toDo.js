@@ -7,5 +7,6 @@ import toDo from "../controller/toDoController.js";
 toDoRouter
     .post('/', toDo.createToDo)
     .get('/', toDo.myTasks)
+    .get('/:id', toDo.oneTask);
 
 export default toDoRouter;
