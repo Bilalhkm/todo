@@ -62,7 +62,8 @@ const updateToDoByID = async (req, res) => {
 
 const listToDos = async (req, res) => {
   const categoryID = req.params.id;
-  const ToDoListAll = await toDo.find({ categoryID });
+  const { skip, limit } = req.query;
+  const ToDoListAll = await toDo.find({ categoryID }).skip(skip).limit(limit);
   if (!ToDoListAll) {
     return res.status(404).send();
   }
