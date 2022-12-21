@@ -6,14 +6,14 @@ categoryRouter
   //Category
   .post("/", category.createCategory)
   .get("/", category.listCategories)
-  .get("/:id", category.findCategoryById)
-  .delete("/:id", category.DeleteCategoryById)
+  .get("/:categoryID", category.findCategoryById)
+  .delete("/:categoryID", category.deleteCategoryById)
 
   //To Do:
-  .post("/:id/todo", toDo.createToDo)
-  .get("/:id/todo", toDo.listToDos)
-  .get("/:id/todo/:id", toDo.findToDoByID)
-  .delete("/:id/todo/:id", toDo.DeleteToDoByID)
-  .patch("/:id/todo/:id", toDo.updateToDoByID);
+  .post("/:categoryID/todo", toDo.createToDo)
+  .get("/:categoryID/todo", toDo.listToDos)
+  .get("/:categoryID/todo/:toDoID", toDo.findToDoByID)
+  .delete("/:categoryID/todo/:toDoID", toDo.deleteToDoByID)
+  .patch("/:categoryID/todo/:toDoID", toDo.updateToDoByID);
 
 export default categoryRouter;
