@@ -5,8 +5,8 @@ import bodyParser from "body-parser";
 
 app.use(bodyParser.json());
 
-import toDo from "./Routes/toDo.js";
+/* import toDo from "./Routes/toDo.js"; */
 import category from "./Routes/category.js"
 app.use("/category", category);
-app.use("/task", toDo);
+/* app.use("/category/:id", toDo); */
 app.listen(3000);

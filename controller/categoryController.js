@@ -1,41 +1,61 @@
 import mongoose from "mongoose";
-import toDo from "../models/toDo.js"
+import toDo from "../models/toDo.js";
 import category from "../models/categories.js";
-const createCategory = (req, res) => {
 
-    category.exists({ category: req.body.category }, async (err, doc) => {
-        if (!doc) {
-            const newCategory = await category.create(req.body);
-            res.status(201).json({ newCategory: newCategory });
+///
 
+const createCategory = async (req, res) => {
+  const categoryExist = await category.exists({
+    categoryName: req.body.category,
+  });
 
-        } else {
-            let myCategory = await category.find({ category: req.body.category });
-            res.json({ myCategory: myCategory });
-        }
-    })
+  if (!categoryExist) {
+    const categoryCreate = await category.create(req.body);
+    return res.status(201).json({ newCategory: categoryCreate });
+  }
 
+  let categoryFind = await category.find({
+    categoryName: req.body.category,
+  });
+
+  res.json({ Category: categoryFind });
 };
-const oneCategory = async (req, res) => {
 
-    const _id = req.params.id
-    const findCategory = (await category.findById({ _id }).select({ category: 1, _id: 0 })).category
+///
 
+const findCategoryById = async (req, res) => {
+  const _id = req.params.id;
+  const categoryById = await category.findById({ _id });
+  res.send({ category: categoryById });
 
-    const myCategory = await toDo.find({ category: findCategory }, { task: 1 });
-    res.send({ category: findCategory, tasks: myCategory });
+  /* const findCategory = (await category.findById({ _id }).select({ category: 1, _id: 0 })).category */
+  /* const myCategory = await toDo.find({ category: findCategory }, { task: 1 }); */
+};
 
-}
+///
+const DeleteCategoryById = async (req, res) => {
+  const _id = req.params.id;
+  const deleteById = await category.findByIdAndRemove({ _id });
+  const deleteToDos = await toDo.findOneAndRemove({ categoryID: _id });
+  res.status(204).json({ message: "category is removed" });
+
+  /* const findCategory = (await category.findById({ _id }).select({ category: 1, _id: 0 })).category */
+  /* const myCategory = await toDo.find({ category: findCategory }, { task: 1 }); */
+};
+
+///
+
 const listCategories = async (req, res) => {
-    const myCategory = req.query.category
-    console.log(req.query.category);
-    if (myCategory) { res.json(await toDo.find({ category: myCategory })); } else {
-        const myCategories = await category.find({});
-        res.json(myCategories)
-    };
+  const { skip, limit } = req.query;
+  const categoryList = await category.find({}).skip(skip).limit(limit);
+  res.json(categoryList);
+};
 
+///
 
-}
-
-export default { createCategory: createCategory, listCategories: listCategories, oneCategory: oneCategory };
-
+export default {
+  createCategory: createCategory,
+  listCategories: listCategories,
+  findCategoryById: findCategoryById,
+  DeleteCategoryById: DeleteCategoryById,
+};
