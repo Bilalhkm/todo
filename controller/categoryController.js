@@ -36,8 +36,7 @@ const findCategoryById = async (req, res) => {
     }
     res.send({ category: categoryById });
   } catch (error) {
-    res.status(404).send();
-    return;
+    throw new Error(error);
   }
 };
 
@@ -46,20 +45,19 @@ const deleteCategoryById = async (req, res) => {
   const { categoryID } = req.params;
 
   try {
-    const deleteById = await category.findByIdAndRemove({ _id: categoryID });
+    const deleteById = await category.deleteOne({ _id: categoryID });
     if (deleteById == null) {
       res.status(404).send();
       return;
     }
-    const deleteToDos = await toDo.findOneAndRemove({ categoryID });
+    const deleteToDos = await toDo.deleteMany({ categoryID });
     if (deleteToDos == null) {
       res.status(404).send();
       return;
     }
     res.status(204).json({ message: "category is removed" });
   } catch (error) {
-    res.status(404).send();
-    return;
+    throw new Error(error);
   }
 
   /* const findCategory = (await category.findById({ _id }).select({ category: 1, _id: 0 })).category */
@@ -74,7 +72,7 @@ const listCategories = async (req, res) => {
     const categoryList = await category.find({}).skip(skip).limit(limit);
     res.json(categoryList);
   } catch (error) {
-    res.status(404).send();
+    throw new Error(error);
   }
 };
 

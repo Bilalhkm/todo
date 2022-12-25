@@ -4,16 +4,18 @@ import category from "../models/categories.js";
 ///
 
 const createToDo = async (req, res, next) => {
-  const { categoryID } = req.params;
+  const { categoryID, ...other } = req.body;
+  const idCat = req.params.categoryID;
 
   try {
-    const findCategory = await category.find({ _id: categoryID });
+    const findCategory = await category.find({ _id: idCat });
 
     if (findCategory.length == 0) {
       res.status(404).send();
       return;
     }
-    const NewToDo = await toDo.create({ categoryID, ...req.body });
+
+    const NewToDo = await toDo.create({ categoryID: idCat, ...other });
     res.json(NewToDo);
   } catch (error) {
     console.log(error);
@@ -42,11 +44,7 @@ const findToDoByID = async (req, res) => {
 const deleteToDoByID = async (req, res) => {
   const { toDoID, categoryID } = req.params;
   try {
-    const deleteById = await toDo.findOneAndRemove({ _id: toDoID, categoryID });
-    if (deleteById == null) {
-      res.status(404).send();
-      return;
-    }
+    await toDo.deleteOne({ _id: toDoID, categoryID });
   } catch (error) {
     res.status(404).send();
     return;
@@ -58,11 +56,13 @@ const deleteToDoByID = async (req, res) => {
 ///
 
 const updateToDoByID = async (req, res) => {
-  const { toDoID, categoryID } = req.params;
+  const idCat = req.params.categoryID;
+  const { toDoID } = req.params;
+  const { categoryID, ...other } = req.body;
   try {
     const updateByID = await toDo.findOneAndUpdate(
-      { categoryID, _id: toDoID },
-      { ...req.body },
+      { categoryID: idCat, _id: toDoID },
+      { ...other },
       { new: true }
     );
     if (updateByID == null) {
@@ -70,9 +70,7 @@ const updateToDoByID = async (req, res) => {
       return;
     }
     res.status(200).json({ updateByID });
-  } catch (error) {
-    return res.status(404).send();
-  }
+  } catch (error) {}
 };
 
 ///
