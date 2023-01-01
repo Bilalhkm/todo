@@ -2,10 +2,11 @@ import mongoose, { model } from "mongoose";
 const { Schema } = mongoose;
 
 const toDoSchema = new Schema({
-  categoryID: { type: String, required: true ,index:true},
+  categoryID: { type: String, required: true, index: true },
   taskName: { type: String, required: true },
-  eventDate: { type: Date, required: true },
-  date: { type: Date, default: Date.now },
+  duoDate: { type: Date, required: true },
+  createdDate: { type: Date, default: Date.now },
+  completeTask: { type: Boolean, default: false },
 });
 
-export default model("toDo", toDoSchema);
+export default model("ToDo", toDoSchema);
