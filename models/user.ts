@@ -1,6 +1,14 @@
 import mongoose, { model } from "mongoose";
 import validator from "validator";
+
 const { Schema } = mongoose;
+
+interface FindUser extends mongoose.Document {
+  username: string;
+  password: string;
+  email: string;
+}
+
 const userSchema = new Schema({
   username: {
     type: String,
@@ -18,4 +26,4 @@ const userSchema = new Schema({
     required: true,
   },
 });
-export default model("User", userSchema);
+export default model<FindUser>("User", userSchema);

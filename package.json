@@ -3,9 +3,8 @@
   "version": "1.0.0",
   "description": "��#\u0000 \u0000t\u0000o\u0000d\u0000o\u0000\r\u0000 \u0000",
   "main": "app.js",
-  "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "tsc-watch --onSuccess \"node ./dist/app.js\""
   },
   "repository": {
     "type": "git",
@@ -27,11 +26,17 @@
     "validator": "^13.7.0"
   },
   "devDependencies": {
+    "@types/bcrypt": "^5.0.0",
+    "@types/express": "^4.17.15",
     "@types/jest": "^29.2.4",
+    "@types/jsonwebtoken": "^9.0.0",
+    "@types/node": "^18.11.18",
     "@types/node-fetch": "^2.6.2",
+    "@types/validator": "^13.7.10",
     "jest": "^29.3.1",
     "node-fetch": "^3.3.0",
     "ts-jest": "^29.0.3",
+    "tsc-watch": "^6.0.0",
     "typescript": "^4.9.4"
   }
 }

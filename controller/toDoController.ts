@@ -1,15 +1,16 @@
-import toDo from "../models/toDo.js";
-import Category from "../models/categories.js";
+import toDo from "../models/toDo";
+import Category from "../models/categories";
+import { NextFunction, Request, Response } from "express";
 
 ///
 
-const createToDo = async (req, res, next) => {
+const createToDo = async (req: Request, res: Response, next: NextFunction) => {
   const { categoryID } = req.params;
 
   try {
     const findCategory = await Category.find({
       _id: categoryID,
-      $or: [{ user: res.locals.user._id }, { shareUser: res.locals.user._id }],
+      user: res.locals.user._id,
     });
     console.log(findCategory);
 
@@ -22,28 +23,41 @@ const createToDo = async (req, res, next) => {
       ...req.body,
       categoryID: categoryID,
       createdDate: new Date(),
+      user: res.locals.user._id,
     });
     res.json(NewToDo);
   } catch (error) {
-    console.log(error);
-    res.status(424).send({ error: error.message });
+    if (error instanceof Error) {
+      console.log(error);
+      res.status(424).send({ error: error.message });
+    } else {
+      console.log("Unexpected error", error);
+    }
   }
 };
 
 ///
 
-const findToDoByID = async (req, res, next) => {
+const findToDoByID = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   const { toDoID, categoryID } = req.params;
   try {
     const checkUser = await Category.exists({
       categoryID,
-      $or: [{ user: res.locals.user._id }, { shareUser: res.locals.user._id }],
+      user: res.locals.user._id,
     });
 
     if (!checkUser) {
       res.status(404).send();
     } else {
-      const toDoById = await toDo.find({ _id: toDoID, categoryID });
+      const toDoById = await toDo.find({
+        _id: toDoID,
+        categoryID,
+        user: res.locals.user._id,
+      });
       if (toDoById.length == 0) {
         res.status(204).send();
         return;
@@ -51,14 +65,22 @@ const findToDoByID = async (req, res, next) => {
       res.send({ toDoById });
     }
   } catch (error) {
-    console.log(error);
-    res.status(424).send({ error: error.message });
+    if (error instanceof Error) {
+      console.log(error);
+      res.status(424).send({ error: error.message });
+    } else {
+      console.log("Unexpected error", error);
+    }
   }
 };
 
 ///
 
-const deleteToDoByID = async (req, res, next) => {
+const deleteToDoByID = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   const { toDoID, categoryID } = req.params;
   try {
     const checkUser = await Category.exists({
@@ -77,14 +99,22 @@ const deleteToDoByID = async (req, res, next) => {
       }
     }
   } catch (error) {
-    console.log(error);
-    res.status(424).send({ error: error.message });
+    if (error instanceof Error) {
+      console.log(error);
+      res.status(424).send({ error: error.message });
+    } else {
+      console.log("Unexpected error", error);
+    }
   }
 };
 
 ///
 
-const updateToDoByID = async (req, res, next) => {
+const updateToDoByID = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   const idCat = req.params.categoryID;
   const { toDoID } = req.params;
   const { categoryID, ...other } = req.body;
@@ -108,33 +138,48 @@ const updateToDoByID = async (req, res, next) => {
     }
     res.status(200).json({ updateByID });
   } catch (error) {
-    console.log(error);
-    res.status(424).send({ error: error.message });
+    if (error instanceof Error) {
+      console.log(error);
+      res.status(424).send({ error: error.message });
+    } else {
+      console.log("Unexpected error", error);
+    }
   }
 };
 
 ///
 
-const listToDos = async (req, res, next) => {
+const listToDos = async (req: Request, res: Response, next: NextFunction) => {
   const { categoryID } = req.params;
 
   const { skip, limit, startdate, finishdate, completetask } = req.query;
+  let _skip: number = 0,
+    _limit: number = 0;
+  if (skip) {
+    _skip = Number(skip);
+  }
+  if (limit) {
+    _limit = Number(limit);
+  }
   let duoDate;
   if (startdate && finishdate) {
-    duoDate = { $gte: new Date(startdate), $lte: new Date(finishdate) };
+    duoDate = {
+      $gte: new Date(String(startdate)),
+      $lte: new Date(String(finishdate)),
+    };
   } else if (startdate) {
-    duoDate = { $gte: new Date(startdate) };
+    duoDate = { $gte: new Date(String(startdate)) };
   } else if (finishdate) {
-    duoDate = { $lte: new Date(finishdate) };
+    duoDate = { $lte: new Date(String(finishdate)) };
   }
 
   try {
-    const checkUser = await Category.exists({
-      categoryID,
-      $or: [{ user: res.locals.user._id }, { shareUser: res.locals.user._id }],
+    const checkUser = await Category.find({
+      _id: categoryID,
+      user: res.locals.user._id,
     });
     console.log(checkUser);
-    if (!checkUser) {
+    if (checkUser.length == 0) {
       res.status(404).send();
     } else {
       let ToDoListAll;
@@ -144,24 +189,28 @@ const listToDos = async (req, res, next) => {
             categoryID,
             duoDate,
           })
-          .skip(skip)
-          .limit(limit);
+          .skip(Number(_skip))
+          .limit(Number(_limit));
       } else {
         ToDoListAll = await toDo
           .find({
             categoryID,
           })
-          .skip(skip)
-          .limit(limit);
+          .skip(Number(_skip))
+          .limit(Number(_limit));
       }
-      if (ToDoListAll.length == 0 || checkUser == false) {
+      if (ToDoListAll.length == 0) {
         return res.status(204).send();
       }
       res.status(200).json({ ToDoListAll });
     }
   } catch (error) {
-    console.log(error);
-    res.status(424).send({ error: error.message });
+    if (error instanceof Error) {
+      console.log(error);
+      res.status(424).send({ error: error.message });
+    } else {
+      console.log("Unexpected error", error);
+    }
   }
 };
 

@@ -1,4 +1,5 @@
 import mongoose, { model } from "mongoose";
+import User from "./user";
 const { Schema } = mongoose;
 
 const toDoSchema = new Schema({
@@ -7,6 +8,7 @@ const toDoSchema = new Schema({
   duoDate: { type: Date, required: true },
   createdDate: { type: Date, default: Date.now },
   completeTask: { type: Boolean, default: false },
+  user: { type: Schema.Types.ObjectId, ref: User },
 });
 
 export default model("ToDo", toDoSchema);

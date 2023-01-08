@@ -1,5 +1,4 @@
 //mongoose
-import mongoose from "mongoose";
 import User from "../models/user.js";
 ///
 
@@ -9,11 +8,12 @@ const saltRounds = 10;
 ///
 
 //createToken
-import createToken from "../modules/createToken.js";
+import createToken from "../utils/createToken.js";
+import { Request, Response } from "express";
 //
 
 ///Sign Up
-const createUser = async (req, res) => {
+const createUser = async (req: Request, res: Response) => {
   const existUsername = await User.exists({
     username: req.body.username,
   });
@@ -40,7 +40,8 @@ const createUser = async (req, res) => {
 ///
 
 ///log in
-const login = async (req, res) => {
+
+const login = async (req: Request, res: Response) => {
   const user = await User.findOne({ email: req.body.email });
   console.log(res.locals.users);
   if (!user) {
