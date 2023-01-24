@@ -11,9 +11,9 @@ export async function connect() {
     if (process.env.MongoHost) {
       mongoHost = process.env.MongoHost;
     } else {
-      mongoHost = "localhost";
+      mongoHost = "127.0.0.1";
     }
-    await mongoose.connect(`mongodb://${mongoHost}:27017/test`);
+    await mongoose.connect(`mongodb://mongodb:27017/test`);
     console.log("mongodb connected");
   } catch (error) {
     console.log(error);

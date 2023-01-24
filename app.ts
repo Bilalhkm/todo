@@ -7,6 +7,8 @@ const app = express();
 //$ dotenv
 import dotenv from "dotenv";
 dotenv.config();
+const port = Number(process.env.port) | 3000;
+
 ////
 
 //$ bodybarser
@@ -34,4 +36,6 @@ app.use("/category", category, toDo);
 app.use("/list", listByUser);
 ////
 connect();
-app.listen(3000);
+app.listen(port, () => {
+  console.log(`⚡️[server]: Server is running at http://localhost:${port}`);
+});
